@@ -2,7 +2,7 @@
 
 Date: 2026-09-20
 
-This report distinguishes implementation/build evidence from runtime evidence. The Java build, unit tests, architecture tests, formatting check, static architecture validation, and Compose configuration validation passed locally. The local Docker engine was unavailable, so the six Testcontainers scenarios, container startup, Flyway against MySQL 8.4, application health, and HTTP smoke flow were not executed on this machine. The completion flags remain false where those runtime checks are required.
+This report distinguishes implementation/build evidence from runtime evidence. Phase 1 runtime verification completed locally with Docker Desktop 4.91.0 / Engine 29.8.0, Docker Compose 5.5.1, Java 21, MySQL 8.4 and Redis 7.4. The complete Maven verification, all Testcontainers scenarios, Compose startup and health checks, Flyway migration, HTTP authentication flow, audit inspection and database metadata checks passed.
 
 ## 1. Implemented Scope
 
@@ -69,13 +69,21 @@ The unified response contains `code`, `message`, `details`, `requestId`, and `ti
 
 The root Compose topology defines `java-backend`, MySQL 8.4 and Redis 7.4. Java binds only to `127.0.0.1`, while MySQL/Redis remain on an internal data network. Qdrant remains behind the `later-phases` profile and has no Phase 1 integration. The Java Dockerfile uses a Maven/Temurin 21 build stage, a Temurin 21 runtime, a non-root user and an HTTP healthcheck.
 
-`docker compose --env-file .env.example config --quiet` passed. The installed Docker CLI could not connect to `dockerDesktopLinuxEngine`; the user-local Docker Desktop executable exited without starting an engine. Compose startup, image build and health checks were therefore not run.
+`docker compose --env-file .env.example config --quiet` passed. `docker compose up -d --build mysql redis java-backend` built the Java image and started the Phase 1 stack. `docker compose ps` reported MySQL, Redis and `java-backend` healthy. The Java image ran as its non-root user, bound the service to `127.0.0.1:8080`, and passed its HTTP healthcheck.
 
 ## 11. Tests
 
 Unit/architecture tests cover BCrypt salting/matching, JWT claims/signature rejection, controller/repository separation and the absence of later-phase controllers. `Phase1AuthenticationIT` defines six ordered scenarios using MySQL 8.4 and Redis 7.4 Testcontainers: bootstrap/login/me/request ID, create/duplicate user, login/validation errors, employee allow/admin deny/refresh rotation, logout/revocation, and disable/audit evidence.
 
-The local run executed 5 unit/architecture tests successfully. All 6 integration scenarios were explicitly skipped because Testcontainers found no valid Docker environment. They are implemented but are not claimed as locally passed.
+The final `./mvnw clean verify` executed 5 unit/architecture tests and all 6 Testcontainers integration scenarios successfully, with 0 failures, 0 errors and 0 skipped tests. Testcontainers 2.0.5 connected to Docker API 1.56, started real MySQL 8.4 and Redis 7.4 containers, ran Flyway V1, and exercised the Phase 1 authentication suite.
+
+Runtime verification found and minimally fixed three Phase 1 defects: the old Testcontainers dependency could not negotiate with the installed Docker API; Spring Boot 4 required `spring-boot-starter-flyway` for Flyway auto-configuration; and method-level authorization denial was being converted to HTTP 500 by the catch-all exception handler. The integration test was also corrected to preserve the optimistic version after role assignment and now asserts `ROLE_ASSIGN` evidence. No API contract, architecture or later-phase scope changed.
+
+The independent Compose-backed HTTP smoke flow passed bootstrap administrator login, `GET /api/v1/users/me`, user creation, role assignment, ordinary-user login, allowed current-user access, administrator-only denial with HTTP 403, refresh rotation, rejection of the old refresh token, logout, and rejection of the logged-out refresh token. Because replay protection revokes the refresh family, the logout check used a fresh login session for the same user so both replay rejection and an actor-attributed logout were verified.
+
+The audit query returned real `LOGIN_SUCCESS`, `LOGIN_FAILURE`, `REFRESH`, `LOGOUT`, and `ROLE_ASSIGN` events. Runtime events had request IDs; administrator, user, and anonymous actors matched their actions; and audited metadata contained no password, JWT, refresh token or Authorization header.
+
+Database inspection showed Flyway schema history version 1 successful, all eight Phase 1 tables plus `flyway_schema_history`, five declared unique constraints, seven foreign keys, and the expected refresh/audit/user indexes. Duplicate email creation returned HTTP 409. Both main and test configuration retain `spring.jpa.hibernate.ddl-auto=validate`; container startup logs show Flyway applying V1 before Hibernate schema validation.
 
 ## 12. CI
 
@@ -96,13 +104,15 @@ docker compose --profile later-phases --env-file .env.example -f docker-compose.
 git diff --check
 ```
 
-The requested runtime commands could not be executed because the Docker daemon was unavailable:
-
 ```powershell
-docker compose --env-file .env up -d --build mysql redis java-backend
+docker version
+docker compose version
+docker compose --env-file .env.example config --quiet
+docker compose --env-file .env.example up -d --build mysql redis java-backend
+docker compose --env-file .env.example ps
 Invoke-RestMethod http://localhost:8080/actuator/health
-# authentication smoke flow
-docker compose --env-file .env down
+# authentication, RBAC, refresh, logout and audit smoke flow
+docker compose --env-file .env.example down
 ```
 
 ## 14. Test Results
@@ -111,17 +121,20 @@ docker compose --env-file .env down
 | --- | --- | --- |
 | Java compile/package | PASS | Spring Boot executable jar built |
 | Unit and ArchUnit | PASS | 5 run, 0 failures/errors/skips |
-| Testcontainers integration | NOT RUN | 6 skipped; no Docker environment |
+| Testcontainers integration | PASS | 6 run, 0 failures/errors/skips; MySQL 8.4 and Redis 7.4 started |
 | Spotless | PASS | 60 Java files clean |
-| Maven `clean verify` | PASS WITH SKIPS | Build success; integration tests skipped |
+| Maven `clean verify` | PASS | Build success; 11 total tests, 0 skipped |
 | Compose configuration | PASS | Phase 1 default config valid |
 | Future overlay configuration | PASS | Valid with `--profile later-phases` |
 | Phase 0 static architecture validation | PASS | `ARCHITECTURE_STATIC_VALIDATION=PASS` |
-| Container/application smoke | NOT RUN | Docker engine unavailable |
+| Container health | PASS | MySQL, Redis and Java backend healthy |
+| Spring health | PASS | `/actuator/health` and `/api/v1/health` returned HTTP 200 / `UP` |
+| Authentication/RBAC smoke | PASS | Login/me/create/assign/403/refresh replay/logout revocation passed |
+| Audit runtime evidence | PASS | Required actions, request IDs, actors and sensitive-data exclusion passed |
+| Database runtime evidence | PASS | Flyway V1, tables, unique/FK/index metadata and `ddl-auto=validate` passed |
 
 ## 15. Known Limitations
 
-- Runtime startup, Flyway against MySQL 8.4, Redis-backed session checks, and the HTTP smoke flow still need one Docker-capable execution.
 - Local/demo authentication uses one HMAC signing secret and has no key rotation service or external identity provider.
 - Redis/MySQL checks favor immediate revocation over lower request latency; performance has not been measured.
 - Department is the seeded `GENERAL` row only.
@@ -142,17 +155,15 @@ docker compose --env-file .env down
 Ticket business logic, Knowledge Base business logic, document upload/parsing/chunking, Python/FastAPI, RAG, Agent/tool calling, AI approval execution, Qdrant integration, DeepSeek/LLM/embedding, Vue/frontend, user-management UI, department administration, bulk import, Kafka, RabbitMQ, Kubernetes, GraphQL, gRPC, CQRS, event sourcing, Keycloak, OAuth Server, Spring Cloud and microservices were not implemented.
 
 ```text
-PHASE_1_COMPLETE = false
-SPRING_BOOT_RUNS = false
-MYSQL_MIGRATION_PASS = false
-AUTH_READY = false
+PHASE_1_COMPLETE = true
+SPRING_BOOT_RUNS = true
+MYSQL_MIGRATION_PASS = true
+AUTH_READY = true
 JWT_READY = true
-RBAC_READY = false
-AUDIT_READY = false
-TESTS_PASS = false
+RBAC_READY = true
+AUDIT_READY = true
+TESTS_PASS = true
 DOCKER_CONFIG_PASS = true
 LATER_PHASE_CODE_IMPLEMENTED = false
-READY_FOR_PHASE_2 = false
+READY_FOR_PHASE_2 = true
 ```
-
-The false runtime flags mean “not proven by the required Docker-backed acceptance run,” not “implementation absent.” One successful Docker/CI `clean verify` plus the prescribed health/auth smoke flow is required before changing them to true.

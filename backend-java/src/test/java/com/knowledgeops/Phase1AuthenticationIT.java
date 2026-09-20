@@ -57,6 +57,7 @@ class Phase1AuthenticationIT {
   @Autowired ObjectMapper json;
   @Autowired AuditLogRepository audits;
   static String adminToken, userToken, userId, userRefresh, oldRefresh, userCsrf;
+  static long userVersion;
 
   @Test
   @Order(1)
@@ -92,7 +93,9 @@ class Phase1AuthenticationIT {
                     .content(body))
             .andExpect(status().isCreated())
             .andReturn();
-    userId = json.readTree(created.getResponse().getContentAsString()).get("id").asText();
+    JsonNode createdUser = json.readTree(created.getResponse().getContentAsString());
+    userId = createdUser.get("id").asText();
+    userVersion = createdUser.get("version").asLong();
     mvc.perform(
             post("/api/v1/users")
                 .header("Authorization", "Bearer " + adminToken)
@@ -100,6 +103,16 @@ class Phase1AuthenticationIT {
                 .content(body))
         .andExpect(status().isConflict())
         .andExpect(jsonPath("$.code").value("EMAIL_CONFLICT"));
+    MvcResult assigned =
+        mvc.perform(
+                put("/api/v1/users/" + userId + "/roles")
+                    .header("Authorization", "Bearer " + adminToken)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content("{\"roles\":[\"EMPLOYEE\"],\"expectedVersion\":" + userVersion + "}"))
+            .andExpect(status().isOk())
+            .andReturn();
+    userVersion =
+        json.readTree(assigned.getResponse().getContentAsString()).get("version").asLong();
   }
 
   @Test
@@ -187,7 +200,7 @@ class Phase1AuthenticationIT {
             patch("/api/v1/users/" + userId + "/status")
                 .header("Authorization", "Bearer " + adminToken)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"status\":\"DISABLED\",\"expectedVersion\":0}"))
+                .content("{\"status\":\"DISABLED\",\"expectedVersion\":" + userVersion + "}"))
         .andExpect(status().isOk());
     mvc.perform(
             post("/api/v1/auth/login")
@@ -200,6 +213,7 @@ class Phase1AuthenticationIT {
             AuditAction.LOGIN_FAILURE,
             AuditAction.REFRESH,
             AuditAction.LOGOUT,
+            AuditAction.ROLE_ASSIGN,
             AuditAction.USER_DISABLE);
   }
 

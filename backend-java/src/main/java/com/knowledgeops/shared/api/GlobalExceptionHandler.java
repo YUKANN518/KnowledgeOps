@@ -8,6 +8,7 @@ import java.util.*;
 import org.slf4j.*;
 import org.springframework.http.*;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
@@ -39,6 +40,12 @@ public class GlobalExceptionHandler {
       HttpMessageNotReadableException ex, HttpServletRequest req) {
     return response(
         HttpStatus.BAD_REQUEST, ErrorCode.BAD_REQUEST.name(), "Malformed request", List.of(), req);
+  }
+
+  @ExceptionHandler(AccessDeniedException.class)
+  ResponseEntity<ErrorResponse> forbidden(AccessDeniedException ex, HttpServletRequest req) {
+    return response(
+        HttpStatus.FORBIDDEN, ErrorCode.FORBIDDEN.name(), "Access is denied", List.of(), req);
   }
 
   @ExceptionHandler(Exception.class)
