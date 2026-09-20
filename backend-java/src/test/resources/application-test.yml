@@ -1,0 +1,16 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  main:
+    banner-mode: off
+knowledgeops:
+  auth:
+    jwt-secret: test-only-secret-at-least-thirty-two-bytes-long-123456
+    issuer: knowledgeops-test
+    access-token-ttl: PT10M
+    refresh-token-ttl: P7D
+    refresh-cookie-secure: false
+    allowed-origin: http://localhost:5173
+  bootstrap:
+    enabled: false

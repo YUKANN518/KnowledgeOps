@@ -1,0 +1,60 @@
+spring:
+  application:
+    name: knowledgeops-backend
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    hikari:
+      maximum-pool-size: ${DB_POOL_SIZE:10}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        type:
+          preferred_uuid_jdbc_type: CHAR
+        jdbc:
+          time_zone: UTC
+  flyway:
+    enabled: true
+    validate-migration-naming: true
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD}
+      timeout: 2s
+server:
+  port: ${SERVER_PORT:8080}
+  error:
+    include-message: never
+    include-stacktrace: never
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: never
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+knowledgeops:
+  auth:
+    jwt-secret: ${JWT_SECRET}
+    issuer: ${JWT_ISSUER:knowledgeops-local}
+    access-token-ttl: ${ACCESS_TOKEN_TTL:PT10M}
+    refresh-token-ttl: ${REFRESH_TOKEN_TTL:P7D}
+    refresh-cookie-secure: ${REFRESH_COOKIE_SECURE:false}
+    allowed-origin: ${ALLOWED_ORIGIN:http://localhost:5173}
+  bootstrap:
+    enabled: ${BOOTSTRAP_ADMIN_ENABLED:false}
+    email: ${BOOTSTRAP_ADMIN_EMAIL:}
+    password: ${BOOTSTRAP_ADMIN_PASSWORD:}
+    display-name: ${BOOTSTRAP_ADMIN_DISPLAY_NAME:Local Administrator}
+logging:
+  pattern:
+    level: "%5p requestId=%X{requestId:-} userId=%X{userId:-}"

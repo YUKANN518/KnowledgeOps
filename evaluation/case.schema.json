@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "split", "category", "actor", "query", "scenario", "expected"],
+  "properties": {
+    "id": {"type": "string", "pattern": "^KO-[0-9]{3}$"},
+    "split": {"enum": ["dev", "test"]},
+    "category": {"enum": ["retrieval", "abstention", "permission", "tool"]},
+    "actor": {"type": "string", "minLength": 1},
+    "query": {"type": "string", "minLength": 1, "maxLength": 2000},
+    "scenario": {"enum": ["BASELINE", "REVOKE_IT_BEFORE_RESPONSE", "REVOKE_IT_BEFORE_HISTORY_READ", "PROMPT_INJECTION", "TOOL_IDENTITY_INJECTION", "APPROVAL_PENDING_NO_WRITE"]},
+    "expected": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["outcome", "goldEvidence", "requiredClaims", "tool", "arguments", "approvalRequired", "businessWritesBeforeApproval"],
+      "properties": {
+        "outcome": {"enum": ["ANSWERED", "INSUFFICIENT_EVIDENCE", "DENIED_OR_ABSTAIN", "TOOL", "DRAFT_PENDING"]},
+        "goldEvidence": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["sourceId", "anchor"], "properties": {"sourceId": {"type": "string"}, "anchor": {"type": "string"}}}},
+        "requiredClaims": {"type": "array", "items": {"type": "string"}},
+        "tool": {"enum": ["NONE", "searchKnowledge", "getTicket", "listTickets", "createTicketDraft", "assignTicketDraft", "updateTicketStatusDraft", "addTicketCommentDraft"]},
+        "arguments": {"type": "object"},
+        "approvalRequired": {"type": "boolean"},
+        "businessWritesBeforeApproval": {"const": 0}
+      }
+    }
+  }
+}

@@ -1,0 +1,304 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://knowledgeops.example/schemas/tool-call.json",
+  "title": "KnowledgeOps strict tool call",
+  "$defs": {
+    "searchKnowledge": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "query": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "knowledgeBaseIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "maxItems": 100
+        }
+      },
+      "required": [
+        "query"
+      ]
+    },
+    "getTicket": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ticketId": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "ticketId"
+      ]
+    },
+    "listTickets": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "OPEN",
+            "IN_PROGRESS",
+            "WAITING_USER",
+            "RESOLVED",
+            "CLOSED",
+            "CANCELLED"
+          ]
+        },
+        "page": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000
+        },
+        "size": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        }
+      },
+      "required": []
+    },
+    "createTicketDraft": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 10000
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "IT",
+            "HR",
+            "FACILITIES",
+            "OTHER"
+          ]
+        },
+        "priority": {
+          "type": "string",
+          "enum": [
+            "LOW",
+            "NORMAL",
+            "HIGH",
+            "URGENT"
+          ]
+        }
+      },
+      "required": [
+        "title",
+        "description",
+        "category",
+        "priority"
+      ]
+    },
+    "assignTicketDraft": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ticketId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "assigneeId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        }
+      },
+      "required": [
+        "ticketId",
+        "assigneeId"
+      ]
+    },
+    "updateTicketStatusDraft": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ticketId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "targetStatus": {
+          "type": "string",
+          "enum": [
+            "OPEN",
+            "IN_PROGRESS",
+            "WAITING_USER",
+            "RESOLVED",
+            "CLOSED",
+            "CANCELLED"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        }
+      },
+      "required": [
+        "ticketId",
+        "targetStatus"
+      ]
+    },
+    "addTicketCommentDraft": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ticketId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "body": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 5000
+        },
+        "visibility": {
+          "type": "string",
+          "enum": [
+            "PUBLIC",
+            "INTERNAL"
+          ]
+        }
+      },
+      "required": [
+        "ticketId",
+        "body",
+        "visibility"
+      ]
+    }
+  },
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "const": "searchKnowledge"
+        },
+        "arguments": {
+          "$ref": "#/$defs/searchKnowledge"
+        }
+      },
+      "required": [
+        "name",
+        "arguments"
+      ]
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "const": "getTicket"
+        },
+        "arguments": {
+          "$ref": "#/$defs/getTicket"
+        }
+      },
+      "required": [
+        "name",
+        "arguments"
+      ]
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "const": "listTickets"
+        },
+        "arguments": {
+          "$ref": "#/$defs/listTickets"
+        }
+      },
+      "required": [
+        "name",
+        "arguments"
+      ]
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "const": "createTicketDraft"
+        },
+        "arguments": {
+          "$ref": "#/$defs/createTicketDraft"
+        }
+      },
+      "required": [
+        "name",
+        "arguments"
+      ]
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "const": "assignTicketDraft"
+        },
+        "arguments": {
+          "$ref": "#/$defs/assignTicketDraft"
+        }
+      },
+      "required": [
+        "name",
+        "arguments"
+      ]
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "const": "updateTicketStatusDraft"
+        },
+        "arguments": {
+          "$ref": "#/$defs/updateTicketStatusDraft"
+        }
+      },
+      "required": [
+        "name",
+        "arguments"
+      ]
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "const": "addTicketCommentDraft"
+        },
+        "arguments": {
+          "$ref": "#/$defs/addTicketCommentDraft"
+        }
+      },
+      "required": [
+        "name",
+        "arguments"
+      ]
+    }
+  ]
+}
