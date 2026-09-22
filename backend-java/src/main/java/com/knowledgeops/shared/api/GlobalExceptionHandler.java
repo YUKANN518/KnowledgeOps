@@ -8,6 +8,7 @@ import java.util.*;
 import org.slf4j.*;
 import org.springframework.http.*;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -46,6 +47,17 @@ public class GlobalExceptionHandler {
   ResponseEntity<ErrorResponse> forbidden(AccessDeniedException ex, HttpServletRequest req) {
     return response(
         HttpStatus.FORBIDDEN, ErrorCode.FORBIDDEN.name(), "Access is denied", List.of(), req);
+  }
+
+  @ExceptionHandler(ObjectOptimisticLockingFailureException.class)
+  ResponseEntity<ErrorResponse> optimisticConflict(
+      ObjectOptimisticLockingFailureException ex, HttpServletRequest req) {
+    return response(
+        HttpStatus.CONFLICT,
+        ErrorCode.TICKET_VERSION_CONFLICT.name(),
+        "Ticket version changed",
+        List.of(),
+        req);
   }
 
   @ExceptionHandler(Exception.class)

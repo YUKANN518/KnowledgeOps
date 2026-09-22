@@ -70,6 +70,10 @@ public class User {
     return email;
   }
 
+  public UUID getDepartmentId() {
+    return department.getId();
+  }
+
   public String getPasswordHash() {
     return passwordHash;
   }

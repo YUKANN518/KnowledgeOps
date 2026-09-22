@@ -17,10 +17,10 @@ class ArchitectureTest {
           .haveSimpleNameEndingWith("Repository");
 
   @ArchTest
-  static final com.tngtech.archunit.lang.ArchRule future_modules_do_not_implement_phase_one =
+  static final com.tngtech.archunit.lang.ArchRule future_modules_are_still_placeholders =
       noClasses()
           .that()
-          .resideInAnyPackage("..ticket..", "..knowledge..", "..ai..")
+          .resideInAnyPackage("..knowledge..", "..ai..")
           .should()
           .haveSimpleNameEndingWith("Controller");
 }
