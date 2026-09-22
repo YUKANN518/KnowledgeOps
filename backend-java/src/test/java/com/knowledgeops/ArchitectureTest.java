@@ -17,10 +17,6 @@ class ArchitectureTest {
           .haveSimpleNameEndingWith("Repository");
 
   @ArchTest
-  static final com.tngtech.archunit.lang.ArchRule future_modules_are_still_placeholders =
-      noClasses()
-          .that()
-          .resideInAnyPackage("..knowledge..", "..ai..")
-          .should()
-          .haveSimpleNameEndingWith("Controller");
+  static final com.tngtech.archunit.lang.ArchRule ai_module_is_still_a_placeholder =
+      noClasses().that().resideInAPackage("..ai..").should().haveSimpleNameEndingWith("Controller");
 }

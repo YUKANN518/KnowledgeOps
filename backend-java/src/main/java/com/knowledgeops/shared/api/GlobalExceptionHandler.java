@@ -13,6 +13,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -52,10 +53,23 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(ObjectOptimisticLockingFailureException.class)
   ResponseEntity<ErrorResponse> optimisticConflict(
       ObjectOptimisticLockingFailureException ex, HttpServletRequest req) {
+    boolean article =
+        "com.knowledgeops.knowledge.domain.KnowledgeArticle".equals(ex.getPersistentClassName());
     return response(
         HttpStatus.CONFLICT,
-        ErrorCode.TICKET_VERSION_CONFLICT.name(),
-        "Ticket version changed",
+        (article ? ErrorCode.ARTICLE_VERSION_CONFLICT : ErrorCode.TICKET_VERSION_CONFLICT).name(),
+        article ? "Article version changed" : "Ticket version changed",
+        List.of(),
+        req);
+  }
+
+  @ExceptionHandler(MaxUploadSizeExceededException.class)
+  ResponseEntity<ErrorResponse> uploadTooLarge(
+      MaxUploadSizeExceededException ex, HttpServletRequest req) {
+    return response(
+        HttpStatus.UNPROCESSABLE_ENTITY,
+        ErrorCode.FILE_TOO_LARGE.name(),
+        "File exceeds 20 MiB",
         List.of(),
         req);
   }

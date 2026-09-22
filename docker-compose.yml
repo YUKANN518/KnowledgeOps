@@ -16,6 +16,9 @@ services:
       BOOTSTRAP_ADMIN_PASSWORD: ${BOOTSTRAP_ADMIN_PASSWORD:-}
       BOOTSTRAP_ADMIN_DISPLAY_NAME: ${BOOTSTRAP_ADMIN_DISPLAY_NAME:-Local Administrator}
       ALLOWED_ORIGIN: ${ALLOWED_ORIGIN:-http://localhost:5173}
+      KNOWLEDGE_STORAGE_PATH: ${KNOWLEDGE_STORAGE_PATH:-/app/data/uploads}
+    volumes:
+      - uploads-data:/app/data/uploads
     ports:
       - "127.0.0.1:${JAVA_PORT:-8080}:8080"
     networks: [web, business-data]
@@ -76,4 +79,5 @@ networks:
 volumes:
   mysql-data:
   redis-data:
+  uploads-data:
   qdrant-data:

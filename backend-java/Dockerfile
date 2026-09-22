@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends curl && rm -rf 
 WORKDIR /app
 COPY --from=build /workspace/target/backend-java-*.jar /app/application.jar
 COPY docker/healthcheck /app/healthcheck
-RUN chmod 0555 /app/healthcheck && chown -R knowledgeops:knowledgeops /app
+RUN mkdir -p /app/data/uploads && chmod 0555 /app/healthcheck && chown -R knowledgeops:knowledgeops /app
 USER knowledgeops
 EXPOSE 8080
 HEALTHCHECK --interval=10s --timeout=3s --start-period=30s --retries=10 CMD ["/app/healthcheck"]
