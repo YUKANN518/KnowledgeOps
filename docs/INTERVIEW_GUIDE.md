@@ -1,4 +1,4 @@
-# KnowledgeOps interview guide
+# KnowledgeOps 面试问答
 
 ## Q1. KnowledgeOps 是什么？
 
@@ -12,11 +12,11 @@
 
 浏览器访问 Vue SPA，生产构建由 Nginx 提供，Nginx 将 `/api` 反向代理到 Spring Boot。Java 服务是模块化单体，包含 auth、user、ticket、knowledge、audit 和 shared 模块。MySQL 是业务事实来源，Redis 只保存活动会话状态，私有 Docker volume 保存上传文件。默认 Compose 一共运行 frontend、java-backend、mysql、redis 四个服务。
 
-## Q4. Authentication 怎么实现？
+## Q4. 身份认证怎么实现？
 
 登录时后端用 BCrypt 校验密码，创建短期 JWT access token 和随机 opaque refresh token。Refresh token 只把 SHA-256 hash 写入 MySQL，原值放 HttpOnly cookie；会话 family 同时以 TTL 写入 Redis。受保护请求需要 JWT 有效、用户仍为 ACTIVE、Redis 会话存在、MySQL 中仍有有效 refresh family。Refresh 会锁定并消费旧 token、生成新 token；Logout 同时撤销数据库 family 和 Redis session。
 
-## Q5. 为什么 Access Token 和 Refresh Token 分开？
+## Q5. 为什么要区分 Access Token 与 Refresh Token？
 
 Access token 生命周期短，适合每次 API 请求快速验证；Refresh token 生命周期长但暴露面更小，只通过 HttpOnly cookie 发送，并且在数据库中可轮换和撤销。这样前端不需要长期保存 bearer token，同时登出、重放检测和账号停用可以让会话尽快失效。
 
@@ -24,7 +24,7 @@ Access token 生命周期短，适合每次 API 请求快速验证；Refresh tok
 
 数据模型是 `User → Role → Permission`，角色和权限 code 由 Flyway 种入。JWT 不作为权限事实，过滤器每次从当前用户关系加载角色和权限，转换为 Spring Security authority。Controller 的 `@PreAuthorize` 做动作级检查，Service 再检查具体资源范围。
 
-## Q7. 什么是 Resource-level Authorization？
+## Q7. 什么是资源级授权？
 
 RBAC 只能说明某个角色通常能做什么，资源级授权还要判断“这一个资源是否属于调用者可访问范围”。例如 Employee 有 `ticket.read.own`，但查询 ticket UUID 时仍必须判断 `creatorId` 是否等于当前用户。Support Agent 则按部门读取，并且只能流转分配给自己的工单。
 
@@ -40,7 +40,7 @@ RBAC 只能说明某个角色通常能做什么，资源级授权还要判断“
 
 Redis 的真实用途是活动会话注册表，不是通用缓存。登录和刷新会写入带 TTL 的 `session:{familyId}`，每次 JWT 请求都会检查它。Logout 删除 key，Redis 缺失或不可用时认证 fail closed。Refresh token 的持久证据和 hash 仍在 MySQL。
 
-## Q11. 什么地方使用 Transaction？
+## Q11. 哪些地方使用事务？
 
 Ticket 的创建、评论、分配、状态流转都与对应审计事件在同一个事务中；文章创建、更新、发布、归档和文档元数据变更也一样。Refresh rotation 使用行锁消费旧 token 并创建新 token。文档上传还注册事务回滚回调：数据库提交失败时删除刚写入的文件。
 
@@ -68,7 +68,7 @@ Ticket 的创建、评论、分配、状态流转都与对应审计事件在同�
 
 每次刷新都把当前 token 标为 consumed，并在同一 family 下生成新的随机 token。旧 token 再次出现时视为 replay，后端撤销整个 family并删除 Redis session。数据库查询对 token hash 加锁，避免两个并发刷新都成功。前端则用 single-flight 合并同时出现的 401，减少正常客户端制造并发 refresh 的机会。
 
-## Q18. 前端权限控制安全吗？
+## Q18. 前端权限控制能否作为安全边界？
 
 前端权限控制本身不是安全边界。它根据 `/users/me` 返回的 permissions 隐藏菜单、路由和按钮，让交互更清楚；用户仍可绕过浏览器直接发请求。因此 Controller 的 authority 检查和 Service 的资源授权必须独立执行，真实 403 smoke test 证明后端会拒绝越权请求。
 

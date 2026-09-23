@@ -41,9 +41,9 @@ $adminHeaders = Headers $admin.accessToken
 $employeeEmail = "phase4.employee.$suffix@example.local"
 $supportEmail = "phase4.support.$suffix@example.local"
 $managerEmail = "phase4.manager.$suffix@example.local"
-$employee = Create-User $admin.accessToken $employeeEmail 'Phase Four Employee' 'Phase4Employee!123' 'EMPLOYEE'
-$support = Create-User $admin.accessToken $supportEmail 'Phase Four Support' 'Phase4Support!123' 'SUPPORT_AGENT'
-$manager = Create-User $admin.accessToken $managerEmail 'Phase Four Manager' 'Phase4Manager!123' 'KNOWLEDGE_MANAGER'
+$employee = Create-User $admin.accessToken $employeeEmail '演示员工' 'Phase4Employee!123' 'EMPLOYEE'
+$support = Create-User $admin.accessToken $supportEmail '一线支持' 'Phase4Support!123' 'SUPPORT_AGENT'
+$manager = Create-User $admin.accessToken $managerEmail '知识管理员' 'Phase4Manager!123' 'KNOWLEDGE_MANAGER'
 
 $employeeSession = [Microsoft.PowerShell.Commands.WebRequestSession]::new()
 $employeeLogin = Login $employeeEmail 'Phase4Employee!123' $employeeSession
@@ -58,9 +58,9 @@ $managerHeaders = Headers $managerLogin.accessToken
 $me = Invoke-RestMethod "$BaseUrl/users/me" -Headers $employeeHeaders
 Assert-Equal $me.email $employeeEmail 'current user'
 
-$ticketBody = @{ title = "Phase 4 browser proxy smoke $suffix"; description = 'Created through the frontend reverse proxy.'; priority = 'HIGH' } | ConvertTo-Json
+$ticketBody = @{ title = "远程办公时无法连接 VPN $suffix"; description = '公司电脑在家庭网络下无法连接 VPN，客户端提示连接超时。已重启电脑并切换网络，问题仍然存在。'; priority = 'HIGH' } | ConvertTo-Json
 $ticket = Invoke-RestMethod "$BaseUrl/tickets" -Method Post -Headers $employeeHeaders -ContentType 'application/json' -Body $ticketBody
-$commentBody = @{ content = 'Employee supplied a reproducible update.'; expectedVersion = $ticket.version } | ConvertTo-Json
+$commentBody = @{ content = '已确认普通网页可以正常访问，VPN 客户端版本为 5.2.1。'; expectedVersion = $ticket.version } | ConvertTo-Json
 $null = Invoke-RestMethod "$BaseUrl/tickets/$($ticket.id)/comments" -Method Post -Headers $employeeHeaders -ContentType 'application/json' -Body $commentBody
 $ticket = Invoke-RestMethod "$BaseUrl/tickets/$($ticket.id)" -Headers $supportHeaders
 $assignmentBody = @{ assigneeId = $support.id; expectedVersion = $ticket.version } | ConvertTo-Json
@@ -71,13 +71,13 @@ Assert-Equal $ticket.status 'IN_PROGRESS' 'ticket transition'
 $ticketList = Invoke-RestMethod "$BaseUrl/tickets?page=0&size=10" -Headers $employeeHeaders
 if (-not ($ticketList.content.id -contains $ticket.id)) { throw 'created ticket is missing from employee list' }
 
-$categoryBody = @{ name = "Phase 4 Operations $suffix"; description = 'Runtime verification category' } | ConvertTo-Json
+$categoryBody = @{ name = "IT 运维指南 $suffix"; description = '用于沉淀常见办公系统的操作和排障方法。' } | ConvertTo-Json
 $category = Invoke-RestMethod "$BaseUrl/knowledge/categories" -Method Post -Headers $managerHeaders -ContentType 'application/json' -Body $categoryBody
 Expect-Forbidden { Invoke-RestMethod "$BaseUrl/knowledge/categories" -Method Post -Headers $employeeHeaders -ContentType 'application/json' -Body (@{name='Forbidden category'} | ConvertTo-Json) } 'employee category creation'
 
-$articleBody = @{ title = "Phase 4 runbook $suffix"; content = 'Initial runtime instructions.'; categoryId = $category.id } | ConvertTo-Json
+$articleBody = @{ title = "远程办公 VPN 使用指南 $suffix"; content = '连接前请确认网络正常，并检查客户端是否为最新版本。'; categoryId = $category.id } | ConvertTo-Json
 $article = Invoke-RestMethod "$BaseUrl/knowledge/articles" -Method Post -Headers $managerHeaders -ContentType 'application/json' -Body $articleBody
-$updateBody = @{ title = "Phase 4 verified runbook $suffix"; content = 'Approved runtime instructions.'; categoryId = $category.id; expectedVersion = $article.version } | ConvertTo-Json
+$updateBody = @{ title = "远程办公 VPN 使用与排障指南 $suffix"; content = "1. 确认网络连接正常。`n2. 打开 VPN 客户端并使用组织账号登录。`n3. 如提示超时，请切换网络后重试并联系支持人员。"; categoryId = $category.id; expectedVersion = $article.version } | ConvertTo-Json
 $article = Invoke-RestMethod "$BaseUrl/knowledge/articles/$($article.id)" -Method Put -Headers $managerHeaders -ContentType 'application/json' -Body $updateBody
 $publishBody = @{ expectedVersion = $article.version } | ConvertTo-Json
 $article = Invoke-RestMethod "$BaseUrl/knowledge/articles/$($article.id)/publish" -Method Post -Headers $managerHeaders -ContentType 'application/json' -Body $publishBody
@@ -86,10 +86,10 @@ Assert-Equal $employeeArticle.status 'PUBLISHED' 'employee article read'
 
 $tempDirectory = Join-Path ([IO.Path]::GetTempPath()) "knowledgeops-phase4-$suffix"
 $null = New-Item $tempDirectory -ItemType Directory
-$textFile = Join-Path $tempDirectory 'phase4-smoke.txt'
-$pdfFile = Join-Path $tempDirectory 'phase4-smoke.pdf'
-[IO.File]::WriteAllText($textFile, 'KnowledgeOps Phase 4 document smoke')
-[IO.File]::WriteAllText($pdfFile, "%PDF-1.4`nKnowledgeOps Phase 4")
+$textFile = Join-Path $tempDirectory 'VPN连接指南.txt'
+$pdfFile = Join-Path $tempDirectory 'VPN排障手册.pdf'
+[IO.File]::WriteAllText($textFile, 'KnowledgeOps VPN 连接指南')
+[IO.File]::WriteAllText($pdfFile, "%PDF-1.4`nKnowledgeOps VPN troubleshooting")
 $textDocument = Upload-Document $managerLogin.accessToken $category.id $textFile 'text/plain'
 $pdfDocument = Upload-Document $managerLogin.accessToken $category.id $pdfFile 'application/pdf'
 $documentList = Invoke-RestMethod "$BaseUrl/documents?page=0&size=20" -Headers $employeeHeaders
@@ -97,7 +97,7 @@ if (-not ($documentList.content.id -contains $textDocument.id)) { throw 'uploade
 $downloadPath = Join-Path $tempDirectory 'downloaded.txt'
 $download = Invoke-WebRequest "$BaseUrl/documents/$($textDocument.id)/content" -Headers $employeeHeaders -OutFile $downloadPath -PassThru
 Assert-Equal $download.StatusCode 200 'document download'
-Assert-Equal ([IO.File]::ReadAllText($downloadPath)) 'KnowledgeOps Phase 4 document smoke' 'download content'
+Assert-Equal ([IO.File]::ReadAllText($downloadPath)) 'KnowledgeOps VPN 连接指南' 'download content'
 $archived = Invoke-RestMethod "$BaseUrl/documents/$($pdfDocument.id)/archive" -Method Post -Headers $managerHeaders
 Assert-Equal $archived.status 'ARCHIVED' 'document archive'
 

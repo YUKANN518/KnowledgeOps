@@ -1,47 +1,43 @@
-# Portfolio summary
+# KnowledgeOps 作品集摘要
 
-## Project
+## 项目定位
 
-KnowledgeOps
+KnowledgeOps 是用于实习申请和技术面试的 Java 后端 / 软件工程作品集项目。
 
-## Positioning
+## 解决的问题
 
-Java Backend / Software Engineering portfolio project for internship applications and technical interviews.
+小型内部团队通常需要一个统一空间来跟踪支持请求，并沉淀可以复用的操作知识。KnowledgeOps 将清晰的工单流程、受控的知识文章和私有文档连接起来，同时在实现中完整呈现身份、权限、审计与数据一致性。
 
-## Problem
+## 核心工程主题
 
-Small internal teams often need one place to track support requests and publish reusable operational knowledge. KnowledgeOps connects a simple ticket workflow with governed articles and private documents, while keeping identity, permissions, audit, and data consistency visible in the implementation.
+- 身份认证与 Refresh Token Rotation
+- RBAC 与资源级授权
+- REST API 设计和一致的错误响应
+- 事务边界与审计一致性
+- 乐观并发控制
+- Flyway 数据库 migration 与关系约束
+- 安全的本地文件处理
+- Testcontainers 集成测试
+- Docker Compose 运行时验收
 
-## Key engineering topics
+## 已实现内容
 
-- Authentication and refresh-token rotation
-- RBAC and resource-level authorization
-- REST API design and consistent errors
-- Transaction boundaries and audit consistency
-- Optimistic concurrency control
-- Flyway database migrations and relational constraints
-- Secure local file handling
-- Testcontainers integration testing
-- Docker Compose runtime verification
+项目由 Vue 前端与 Spring Boot 模块化单体组成，MySQL 保存业务数据，Redis 保存活动会话状态。系统支持登录、会话恢复与登出；管理员创建用户与分配角色；按权限范围开展工单协作；发布知识文章；安全地上传、下载和归档文档；记录审计事件与 requestId；并可通过容器在本地完整运行。
 
-## What I built
+前端实现权限感知路由和操作控件、Axios single-flight 刷新，以及加载、空状态、错误状态和响应式页面。后端始终对每个受保护资源作最终授权判断。
 
-I built a Vue frontend and Spring Boot modular monolith backed by MySQL and Redis. The system supports login/session restoration/logout, administrator-created users and roles, scoped ticket collaboration, article publishing, secure document upload/download/archive, audit events, request IDs, and a containerized local runtime.
+## 项目收获
 
-The frontend implements permission-aware routes and controls, Axios single-flight refresh, loading/empty/error states, and responsive screens. Backend authorization remains authoritative for every protected resource.
+- 身份认证需要数据库、缓存、Cookie、CSRF 和客户端协同；只有签名 JWT 无法满足立即撤销要求。
+- RBAC 回答用户通常能做什么，资源级检查则判断用户能否操作当前这一个工单或文档。
+- 当审计证据属于业务保证时，审计写入必须进入同一事务。
+- 乐观锁可以将静默覆盖转化为客户端可处理的显式冲突。
+- 文件安全由文件名、类型、内容、服务端存储名、路径边界和鉴权读取共同组成。
+- 集成测试使用与运行时一致的 MySQL 和 Redis，更能证明真实行为。
+- 控制作品集范围，能让每一项已交付能力都可演示、可解释、可验证。
 
-## What I learned
+## 范围决策
 
-- Authentication requires coordinated database, cache, cookie, CSRF, and client behavior; a signed JWT alone is insufficient for immediate revocation.
-- RBAC answers what a user may generally do, while resource checks answer whether the user may act on this specific ticket or document.
-- Transactions must include audit writes when audit evidence is part of the business guarantee.
-- Optimistic locking turns silent lost updates into explicit conflicts that a client can handle.
-- File security is a chain of checks: filename, type, content, generated storage name, containment, and authorized retrieval.
-- Integration tests are more credible when they exercise the same MySQL and Redis products used at runtime.
-- Scope control improves a portfolio project when each delivered capability can be demonstrated and explained.
+系统保持模块化单体结构。微服务和 Kubernetes 会增加部署与一致性成本，不符合本项目的学习目标。单机演示使用本地持久化 volume 已足够，因此没有引入 MinIO 或其他对象存储。最终业务流程不需要 Elasticsearch、全文检索或 AI/RAG，因此这些能力也未实现。
 
-## Scope decisions
-
-The system remains a modular monolith. Microservices and Kubernetes would add deployment and consistency costs without helping this project's learning goals. Local persistent storage is adequate for a single-machine demo, so MinIO or another object store was not added. Elasticsearch/full-text search and AI/RAG were excluded because the final product flow does not require them.
-
-For a real production system, object storage, stronger observability, automated delivery, backups, key rotation, and a deployment platform would be evaluated from measured needs. They are not claimed as current features.
+如果进入真实生产环境，会根据实际规模和故障数据评估对象存储、集中可观测性、自动化交付、备份恢复、密钥轮换和部署平台；这些不属于当前已实现功能。

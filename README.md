@@ -1,172 +1,173 @@
-# KnowledgeOps
+# KnowledgeOps 企业知识库与智能工单协作平台
 
-> A lightweight internal ticket and knowledge management system built with Spring Boot and Vue.
+> 使用 Spring Boot 与 Vue 构建的轻量企业内部工单和知识管理系统。
 
-KnowledgeOps is a portfolio project focused on practical Java backend engineering. It combines secure authentication, role-based and resource-level authorization, ticket collaboration, knowledge publishing, and private document handling in one runnable application.
+KnowledgeOps 是一个面向实习求职与技术面试的 Java 后端作品集项目。系统将安全认证、基于角色与资源的权限控制、工单协作、知识发布和私有文档管理整合为一套可实际运行的应用。
 
-The project is intentionally scoped as a small internal tool. It demonstrates complete business flows and testable engineering decisions without presenting itself as a production-scale SaaS platform.
+项目定位为小型企业内部工具，重点展示完整业务流程与可验证的工程决策，不将其包装为生产级 SaaS 平台。
 
-## Demo preview
+## 界面预览
 
-| Dashboard | Ticket workflow |
+| 工作台 | 工单协作 |
 | --- | --- |
-| ![KnowledgeOps dashboard](docs/images/dashboard.png) | ![Ticket detail with comments and workflow controls](docs/images/ticket-detail.png) |
+| ![KnowledgeOps 中文工作台](docs/images/dashboard.png) | ![工单详情、评论与状态流转](docs/images/ticket-detail.png) |
 
-| Knowledge articles | Documents |
+| 知识文章 | 知识文档 |
 | --- | --- |
-| ![Published knowledge articles](docs/images/knowledge-articles.png) | ![Secure document management](docs/images/documents.png) |
+| ![已发布的知识文章](docs/images/knowledge-articles.png) | ![安全文档管理](docs/images/documents.png) |
 
-Additional views: [Login](docs/images/login.png) · [Ticket list](docs/images/tickets.png)
+其他界面：[登录](docs/images/login.png) · [工单列表](docs/images/tickets.png)
 
-## Key features
+## 核心功能
 
-### Authentication and security
+### 身份认证与安全
 
-- Email/password login with BCrypt password hashing.
-- Short-lived JWT access tokens and rotating opaque refresh tokens.
-- HttpOnly refresh cookie, CSRF header check, logout revocation, and replay detection.
-- Permission-based RBAC for Employee, Support Agent, Knowledge Manager, and Administrator.
-- Backend resource checks prevent employees from reading another employee's ticket.
-- Request IDs and audit events with deliberately limited metadata.
+- 使用邮箱和密码登录，密码通过 BCrypt 哈希保存。
+- 使用短期 JWT Access Token 与可轮换的随机 Refresh Token。
+- 使用 HttpOnly Refresh Cookie、CSRF 请求头校验、登出撤销和重放检测。
+- 为普通员工、支持人员、知识管理员和系统管理员提供基于权限的 RBAC。
+- 后端资源级检查可阻止普通员工读取他人创建的工单。
+- 通过 requestId 和受限元数据记录审计事件。
 
-### Ticket management
+### 工单管理
 
-- Create, filter, paginate, and inspect tickets.
-- Add public comments and assign tickets to eligible support users.
-- Enforce the `OPEN → IN_PROGRESS → RESOLVED → CLOSED` workflow, including the supported return to `OPEN`.
-- Detect concurrent updates with JPA optimistic locking and explicit expected versions.
+- 支持工单创建、筛选、分页和详情查看。
+- 支持公开评论，并可将工单分配给符合条件的支持人员。
+- 执行 `OPEN → IN_PROGRESS → RESOLVED → CLOSED` 状态流转，也支持从 `IN_PROGRESS` 返回 `OPEN`。
+- 使用 JPA 乐观锁和显式版本号识别并发更新。
 
-### Knowledge management
+### 知识管理
 
-- Create categories and draft articles, then edit, publish, or archive them.
-- Keep unpublished and archived content unavailable to ordinary employees.
-- Upload, list, download, and archive PDF, DOCX, TXT, and Markdown documents.
-- Validate file size, filename, extension, declared MIME type, basic signature, storage containment, and symbolic links.
-- Store files under server-generated UUID names in a private persistent volume.
+- 创建知识分类和文章草稿，并支持编辑、发布与归档。
+- 普通员工无法访问未发布或已归档内容。
+- 支持 PDF、DOCX、TXT 和 Markdown 文档的上传、列表、下载与归档。
+- 校验文件大小、文件名、扩展名、声明 MIME 类型、基础文件签名、存储路径边界和符号链接。
+- 使用服务端生成的 UUID 文件名，将文件保存在私有持久化 volume 中。
 
-### Engineering evidence
+### 工程验证
 
-- Flyway owns all MySQL schema changes; Hibernate runs with `ddl-auto=validate`.
-- Redis stores active authentication-session state with TTL.
-- Business changes and their audit events share transaction boundaries.
-- Testcontainers integration suites use real MySQL 8.4 and Redis 7.4 containers.
-- Docker Compose starts the Vue/Nginx frontend, Spring Boot backend, MySQL, Redis, and persistent uploads volume.
+- Flyway 负责全部 MySQL schema 变更，Hibernate 使用 `ddl-auto=validate`。
+- Redis 保存带 TTL 的活动认证会话状态。
+- 业务变更与对应审计事件共享事务边界。
+- Testcontainers 集成测试使用真实 MySQL 8.4 与 Redis 7.4 容器。
+- Docker Compose 启动 Vue/Nginx 前端、Spring Boot 后端、MySQL、Redis 和持久化上传 volume。
 
-## Tech stack
+## 技术栈
 
-| Area | Technology |
+| 范围 | 技术 |
 | --- | --- |
-| Backend | Java 21, Spring Boot 4.1, Spring Security, Spring Data JPA, Maven |
-| Data | MySQL 8.4, Redis 7.4, Flyway |
-| Frontend | Vue 3, TypeScript, Vite, Vue Router, Pinia, Axios, Element Plus |
-| Runtime | Docker, Docker Compose, Nginx |
-| Testing | JUnit 5, Spring Boot Test, Testcontainers, ArchUnit, Vitest, ESLint |
+| 后端 | Java 21、Spring Boot 4.1、Spring Security、Spring Data JPA、Maven |
+| 数据 | MySQL 8.4、Redis 7.4、Flyway |
+| 前端 | Vue 3、TypeScript、Vite、Vue Router、Pinia、Axios、Element Plus |
+| 运行环境 | Docker、Docker Compose、Nginx |
+| 测试 | JUnit 5、Spring Boot Test、Testcontainers、ArchUnit、Vitest、ESLint |
 
-## Architecture
+## 系统架构
 
 ```mermaid
 flowchart LR
-    B[Browser] -->|HTTP :5173| F[Vue 3 + Nginx]
-    F -->|/api reverse proxy| J[Spring Boot REST API]
+    B[浏览器] -->|HTTP :5173| F[Vue 3 + Nginx]
+    F -->|/api 反向代理| J[Spring Boot REST API]
     J -->|JPA / Flyway| M[(MySQL 8.4)]
-    J -->|active session TTL| R[(Redis 7.4)]
-    J -->|private files| V[(Uploads volume)]
+    J -->|活动会话 TTL| R[(Redis 7.4)]
+    J -->|私有文件| V[(上传文件 volume)]
 ```
 
-The Java application is a modular monolith organized around authentication, users, tickets, knowledge, audit, and shared infrastructure. MySQL is the business source of truth. Redis participates in session validity checks; it is not used as a general cache. Nginx serves the production frontend and proxies `/api` to Spring Boot.
+Java 应用采用模块化单体结构，按身份认证、用户、工单、知识、审计和共享基础设施划分。MySQL 是业务数据的事实来源；Redis 参与会话有效性校验，不作为通用缓存；Nginx 提供生产构建后的前端资源，并将 `/api` 代理到 Spring Boot。
 
-See [Architecture](docs/ARCHITECTURE.md) for boundaries, data ownership, and runtime details.
+系统边界、数据归属和运行时细节见[架构说明](docs/ARCHITECTURE.md)。
 
-## Authentication flow
+## 认证流程
 
 ```mermaid
 sequenceDiagram
-    participant UI as Vue client
+    participant UI as Vue 客户端
     participant API as Spring Boot
     participant DB as MySQL
     participant Redis
-    UI->>API: Login with email and password
-    API->>DB: Verify user and store refresh-token hash
-    API->>Redis: Activate session family with TTL
-    API-->>UI: Access token + HttpOnly refresh cookie
-    UI->>API: Protected request with Bearer token
-    API->>Redis: Verify active session
-    API-->>UI: Response
-    UI->>API: Refresh after 401
-    API->>DB: Consume old token and create rotated token
-    API-->>UI: New access token + refresh cookie
+    UI->>API: 使用邮箱和密码登录
+    API->>DB: 校验用户并保存 Refresh Token 哈希
+    API->>Redis: 激活带 TTL 的会话 family
+    API-->>UI: Access Token + HttpOnly Refresh Cookie
+    UI->>API: 携带 Bearer Token 访问受保护接口
+    API->>Redis: 校验活动会话
+    API-->>UI: 返回响应
+    UI->>API: 401 后请求刷新
+    API->>DB: 消费旧 Token 并生成轮换 Token
+    API-->>UI: 新 Access Token + Refresh Cookie
 ```
 
-The access token stays in frontend memory. The browser holds the refresh token only as an HttpOnly cookie. Concurrent 401 responses share one frontend refresh request, and logout revokes both the MySQL token family and Redis session.
+Access Token 只保存在前端内存中；浏览器仅通过 HttpOnly Cookie 保存 Refresh Token。并发 401 响应会合并为一次前端刷新请求，登出时同时撤销 MySQL 中的 Token family 和 Redis 会话。
 
-## Authorization model
+## 权限模型
 
-| Role | Main capabilities |
+| 角色 | 主要能力 |
 | --- | --- |
-| Employee | Create and read own tickets, comment, read published articles, download active documents |
-| Support Agent | Employee access plus department ticket reading, assignment, and assigned-ticket transitions |
-| Knowledge Manager | Employee access plus category, article, and document management |
-| Administrator | User/role and audit administration plus global ticket and knowledge management |
+| 普通员工 | 创建并查看本人工单、发表评论、阅读已发布文章、下载有效文档 |
+| 支持人员 | 包含普通员工权限，并可读取部门工单、分配工单、流转分配给自己的工单 |
+| 知识管理员 | 包含普通员工权限，并可管理分类、文章和文档 |
+| 系统管理员 | 管理用户、角色与审计，并可全局管理工单和知识内容 |
 
-Frontend route and button checks improve the user experience. They are not the security boundary. Spring Security permission checks and application-level resource checks make the final decision. For example, possession of a valid ticket UUID does not let an employee read a ticket created by someone else.
+前端路由与按钮权限用于改善交互体验，后端 Spring Security 权限检查和应用层资源检查才是最终安全边界。即使知道有效的工单 UUID，普通员工也无法读取他人创建的工单。
 
-## Domain overview
+## 领域概览
 
 ```mermaid
 erDiagram
-    DEPARTMENT ||--o{ USER : contains
-    USER }o--o{ ROLE : assigned
-    ROLE }o--o{ PERMISSION : grants
-    USER ||--o{ REFRESH_TOKEN : owns
-    USER ||--o{ TICKET : creates
-    USER ||--o{ TICKET_COMMENT : writes
-    TICKET ||--o{ TICKET_COMMENT : contains
-    KNOWLEDGE_CATEGORY ||--o{ KNOWLEDGE_ARTICLE : groups
-    KNOWLEDGE_CATEGORY ||--o{ KNOWLEDGE_DOCUMENT : groups
-    USER ||--o{ AUDIT_LOG : acts
+    DEPARTMENT ||--o{ USER : 包含
+    USER }o--o{ ROLE : 分配
+    ROLE }o--o{ PERMISSION : 授予
+    USER ||--o{ REFRESH_TOKEN : 拥有
+    USER ||--o{ TICKET : 创建
+    USER ||--o{ TICKET_COMMENT : 编写
+    TICKET ||--o{ TICKET_COMMENT : 包含
+    KNOWLEDGE_CATEGORY ||--o{ KNOWLEDGE_ARTICLE : 归类
+    KNOWLEDGE_CATEGORY ||--o{ KNOWLEDGE_DOCUMENT : 归类
+    USER ||--o{ AUDIT_LOG : 触发
 ```
 
-The implemented schema contains identity/RBAC, refresh tokens, audit logs, tickets and comments, knowledge categories, articles, and document metadata. Flyway migrations `V1`–`V3` are the executable schema definition.
+已实现的 schema 包括身份与 RBAC、Refresh Token、审计日志、工单与评论、知识分类、文章和文档元数据。Flyway 迁移 `V1`–`V3` 是可执行的 schema 定义。
 
-## Quick start
+## 快速启动
 
-Requirements: Docker Desktop or Docker Engine with Compose support.
+环境要求：Docker Desktop，或支持 Compose 的 Docker Engine。
 
 ```bash
 git clone <repository-url> knowledgeops
 cd knowledgeops
 cp .env.example .env
-# Replace every local password and signing-secret placeholder in .env
+# 将 .env 中的本地密码和签名密钥占位值全部替换
+
 docker compose --env-file .env config --quiet
 docker compose --env-file .env up -d --build
 docker compose ps
 ```
 
-PowerShell uses `Copy-Item .env.example .env` instead of `cp`.
+PowerShell 请使用 `Copy-Item .env.example .env` 代替 `cp`。
 
-Open:
+访问地址：
 
-- Frontend: <http://localhost:5173>
-- Backend health: <http://localhost:8080/actuator/health>
-- OpenAPI UI: <http://localhost:8080/swagger-ui.html>
+- 前端：<http://localhost:5173>
+- 后端健康检查：<http://localhost:8080/actuator/health>
+- OpenAPI UI：<http://localhost:8080/swagger-ui.html>
 
-The bootstrap administrator email and password come from `BOOTSTRAP_ADMIN_EMAIL` and `BOOTSTRAP_ADMIN_PASSWORD` in the ignored local `.env`. They are development bootstrap values, not production credentials. Public registration is intentionally unavailable.
+初始管理员邮箱和密码来自本地 `.env` 中的 `BOOTSTRAP_ADMIN_EMAIL` 与 `BOOTSTRAP_ADMIN_PASSWORD`。这些仅是开发环境启动值，不是生产凭据；系统有意不提供公开注册。
 
-To create disposable Employee, Support Agent, and Knowledge Manager accounts and exercise the complete API through the frontend proxy:
+若要创建一次性的普通员工、支持人员和知识管理员账号，并通过前端代理执行完整 API 流程，请运行：
 
 ```powershell
 .\frontend\tests\runtime-smoke.ps1
 ```
 
-The script prints the generated account emails. Its fixed passwords are local test data and are visible in the script. Stop the environment with:
+脚本会输出生成的账号邮箱，固定密码仅用于本地测试并明确保存在脚本中。停止环境：
 
 ```bash
 docker compose --env-file .env down
 ```
 
-## Verification
+## 验证方式
 
-Frontend:
+前端：
 
 ```bash
 cd frontend
@@ -177,26 +178,26 @@ npm test
 npm run build
 ```
 
-Backend (Java 21 and a running Docker daemon are required for Testcontainers):
+后端需要 Java 21 和正在运行的 Docker daemon：
 
 ```bash
 cd backend-java
 ./mvnw clean verify
 ```
 
-On Windows use `.\mvnw.cmd clean verify`. The integration suites cover authentication, refresh rotation, RBAC, ticket resource authorization and concurrency, article visibility, file validation and download, audit records, and Flyway constraints.
+Windows 请使用 `.\mvnw.cmd clean verify`。集成测试覆盖认证、Refresh Token 轮换、RBAC、工单资源授权与并发、文章可见性、文件校验与下载、审计记录和 Flyway 约束。
 
-## Interview material
+## 面试材料
 
-- [3–5 minute demo script](docs/DEMO_SCRIPT.md)
-- [Architecture](docs/ARCHITECTURE.md)
-- [Interview guide](docs/INTERVIEW_GUIDE.md)
-- [Resume bullets](docs/RESUME_BULLETS.md)
-- [Portfolio summary](docs/PORTFOLIO_SUMMARY.md)
-- [Phase 5 verification report](PHASE_5_PORTFOLIO_FINISH_REPORT.md)
+- [3–5 分钟演示脚本](docs/DEMO_SCRIPT.md)
+- [架构说明](docs/ARCHITECTURE.md)
+- [面试问答](docs/INTERVIEW_GUIDE.md)
+- [简历要点](docs/RESUME_BULLETS.md)
+- [作品集摘要](docs/PORTFOLIO_SUMMARY.md)
+- [Phase 5 验收报告](PHASE_5_PORTFOLIO_FINISH_REPORT.md)
 
-## Scope and limitations
+## 范围与限制
 
-KnowledgeOps uses local persistent file storage and has no full-text search, object storage, production deployment, or production CI/CD pipeline. AI, RAG, vector search, Python services, microservices, Kubernetes, notifications, and analytics are not implemented. The repository retains some Phase 0 design artifacts as planning history; [the documentation index](docs/README.md) clearly separates those proposals from the delivered system.
+KnowledgeOps 使用本地持久化文件存储，目前没有全文检索、对象存储、生产部署或生产 CI/CD 流水线。AI、RAG、向量检索、Python 服务、微服务、Kubernetes、通知和数据分析均未实现。仓库保留部分 Phase 0 设计资料作为规划历史，[文档索引](docs/README.md)会区分历史提案与最终交付系统。
 
-Development is complete at Phase 5. The repository is now intended for portfolio review, interview demonstrations, and job applications.
+开发已在 Phase 5 完成。仓库现用于作品集审阅、面试演示和求职材料展示。

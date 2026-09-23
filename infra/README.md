@@ -1,6 +1,6 @@
-# Infrastructure architecture
+# 基础设施架构
 
-> **Phase 0 design archive:** the implemented runtime is the root `docker-compose.yml` with frontend, Java, MySQL, Redis, and uploads storage. Later-phase AI topology below is not delivered.
+> **Phase 0 设计归档：** 已实现运行时以根目录 `docker-compose.yml` 为准，包含 frontend、Java、MySQL、Redis 和上传文件存储。下方后续阶段 AI 拓扑未交付。
 
 `docker-compose.yml` 可以启动 MySQL/Redis/Qdrant。本轮没有应用镜像，所以完整三层业务启动不可执行；不能把占位镜像或HTTP空壳说成可演示产品。`compose.application.yml` 是完整六服务拓扑的 Compose 可解析草案，Phase7构建三个实际镜像后合并使用。当前版本标签是兼容性基线，Phase7核验镜像存在性并固定digest；本轮尚未拉取镜像。
 

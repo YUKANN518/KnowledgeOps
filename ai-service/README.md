@@ -1,6 +1,6 @@
-# Python AI service skeleton
+# Python AI 服务骨架
 
-> **Not implemented:** this empty skeleton is retained from Phase 0 design work. Python, AI, RAG, and vector search are outside the completed project scope.
+> **未实现：** 此空骨架保留自 Phase 0 设计阶段。Python、AI、RAG 和向量检索不属于已完成项目范围。
 
 Phase3启用Python3.12、FastAPI、Pydantic、httpx、parser与Qdrant client；依赖由pyproject与lock固定。无SQLAlchemy：首版没有Python自有数据库。`app/`按架构分包，目录当前不含实现。
 

@@ -1,21 +1,21 @@
-# Documentation map
+# 文档索引
 
-## Final implementation reference
+## 最终实现参考
 
-- [Project README](../README.md)
-- [Architecture](ARCHITECTURE.md)
-- [Demo script](DEMO_SCRIPT.md)
-- [Interview guide](INTERVIEW_GUIDE.md)
-- [Resume bullets](RESUME_BULLETS.md)
-- [Portfolio summary](PORTFOLIO_SUMMARY.md)
-- [Phase 1 report](../PHASE_1_JAVA_FOUNDATION_REPORT.md)
-- [Phase 2 report](../PHASE_2_TICKET_SYSTEM_REPORT.md)
-- [Phase 3 report](../PHASE_3_KNOWLEDGE_MANAGEMENT_REPORT.md)
-- [Phase 4 report](../PHASE_4_VUE_FRONTEND_REPORT.md)
-- [Phase 5 report](../PHASE_5_PORTFOLIO_FINISH_REPORT.md)
+- [项目 README](../README.md)
+- [架构说明](ARCHITECTURE.md)
+- [演示脚本](DEMO_SCRIPT.md)
+- [面试问答](INTERVIEW_GUIDE.md)
+- [简历要点](RESUME_BULLETS.md)
+- [作品集摘要](PORTFOLIO_SUMMARY.md)
+- [Phase 1 报告](../PHASE_1_JAVA_FOUNDATION_REPORT.md)
+- [Phase 2 报告](../PHASE_2_TICKET_SYSTEM_REPORT.md)
+- [Phase 3 报告](../PHASE_3_KNOWLEDGE_MANAGEMENT_REPORT.md)
+- [Phase 4 报告](../PHASE_4_VUE_FRONTEND_REPORT.md)
+- [Phase 5 报告](../PHASE_5_PORTFOLIO_FINISH_REPORT.md)
 
-## Phase 0 design archive
+## Phase 0 设计归档
 
-The remaining product scope, domain model, database design, API contracts, ADRs, AI architecture, and implementation-plan files record the original architecture exercise. They intentionally include proposed capabilities such as AI/RAG, document versions, approvals, Qdrant, and broader workflows that were not implemented.
+其余产品范围、领域模型、数据库设计、API contract、ADR、AI 架构和实现计划文件记录了最初的架构设计过程，其中有意保留 AI/RAG、文档版本、审批、Qdrant 和更广业务流程等未实现提案。
 
-Use the final implementation reference above when evaluating runnable behavior. The design archive is retained to show early trade-off analysis, not to claim delivered features.
+评估可运行行为时，请以上方“最终实现参考”为准。设计归档用于展示早期取舍分析，不代表这些能力已经交付。
