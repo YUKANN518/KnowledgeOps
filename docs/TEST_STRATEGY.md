@@ -1,5 +1,7 @@
 # Test strategy
 
+> **Phase 0 design archive:** this is the original target strategy and includes unimplemented later-phase systems. See the Phase reports and [final README](../README.md) for executed verification.
+
 ## 当前和未来的测试边界
 
 Phase 0 执行 `python scripts/validate_architecture.py` 检查 required files、内部 Markdown 链接、OpenAPI/schema、工具禁止身份字段、SQL 表/ERD覆盖、评测 case IDs/证据锚点/数量；`docker compose config --quiet` 解析部署配置。这些检查不证明业务逻辑已实现，也不替代运行 MySQL DDL 或镜像启动。

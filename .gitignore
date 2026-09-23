@@ -19,3 +19,8 @@ target/
 evaluation/results/*
 !evaluation/results/.gitkeep
 *.log
+uploads/
+*.db
+*.sqlite
+*.sqlite3
+.vscode/

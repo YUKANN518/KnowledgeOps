@@ -1,5 +1,7 @@
 # Implementation phases
 
+> **Phase 0 design archive:** this original plan extends beyond the completed Phase 5 scope. Development stopped after the portfolio finish; there is no Phase 6.
+
 每一阶段合并前同步 API/SQL/ADR，所有阶段可独立演示与验证。下列命令是阶段建好工具链后的验收约定，不声称当前可执行；当前可执行命令单列在 README。
 
 | Phase | 交付 | 独立验收 / 出口条件 |

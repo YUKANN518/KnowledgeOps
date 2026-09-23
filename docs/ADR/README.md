@@ -1,5 +1,7 @@
 # Architecture decision records
 
+> **Phase 0 design archive:** these ADRs document early trade-off analysis. Decisions about AI, Qdrant, and approval workflows were not implemented in the final portfolio scope.
+
 状态均为 Accepted for v1 architecture；实现依次落地。变更时追加新 ADR，保留原决定上下文。
 
 | ADR | 决定 |

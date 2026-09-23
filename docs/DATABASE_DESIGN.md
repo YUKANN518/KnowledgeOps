@@ -1,5 +1,7 @@
 # Database design
 
+> **Phase 0 design archive:** this planned schema is broader than the implemented Flyway V1–V3 schema. See the [final architecture](ARCHITECTURE.md) and executable migrations for delivered tables.
+
 业务持久化只有 MySQL 8.4；完整字段、类型、PK/FK/Unique/Index/CHECK 以 [schema.sql](database/schema.sql) 为准，本轮不自动执行 DDL。Qdrant 保存可重建向量，Redis 保存有 TTL 的会话与限流状态。共 25 张业务/关联/技术表（实际数量由验证脚本核对）。
 
 ## 约定与不变量

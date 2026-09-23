@@ -1,5 +1,7 @@
 # Complete ERD
 
+> **Phase 0 design archive:** this planned ERD is broader than the implemented Flyway V1–V3 schema. It is retained as design history.
+
 来源：[schema.sql](schema.sql)。包含所有表与 FK；关联表表示多对多，空心端表示可空关联。字段类型和完整约束以 SQL 为准。
 
 ```mermaid

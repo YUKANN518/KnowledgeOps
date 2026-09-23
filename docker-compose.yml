@@ -1,4 +1,4 @@
-# Phase 1 default topology: Java backend with MySQL and Redis. Future topology: infra/compose.application.yml.
+# Final local portfolio topology. The later-phases profile is retained only as a design artifact.
 services:
   frontend:
     build:

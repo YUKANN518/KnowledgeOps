@@ -1,5 +1,7 @@
 # Product scope — v1 frozen
 
+> **Phase 0 design archive:** this proposal includes capabilities that were not implemented. Use the final [README](../README.md) and [architecture](ARCHITECTURE.md) for delivered behavior.
+
 目标：让面试官通过一个可解释、可维护的企业应用，观察 Java 事务/权限/数据库能力与 Python AI 应用能力。假设单企业、最多约 100 个演示用户、100 个知识库、10,000 个 chunk；这些是设计容量预算，不是已验证性能承诺。
 
 ## 必须交付的垂直流程

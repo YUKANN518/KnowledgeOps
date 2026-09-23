@@ -1,5 +1,7 @@
 # Security model
 
+> **Phase 0 design archive:** this document contains planned controls for unimplemented AI and knowledge-base workflows. The [final architecture](ARCHITECTURE.md) describes the implemented authentication and authorization model.
+
 ## 信任边界与权限矩阵
 
 所有授权由 Java 的用户状态、角色与资源事实计算，不能信任请求中的 userId/departmentId/role。管理员管理功能不能隐式读取知识正文。角色可组合，权限为满足资源条件的并集。

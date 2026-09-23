@@ -1,5 +1,7 @@
 # API contract
 
+> **Phase 0 design archive:** this contract contains proposed endpoints beyond the delivered product. The implemented controllers and the runtime OpenAPI UI are authoritative for Phase 5.
+
 本文件解释业务语义，字段/required/enum/响应类型以 [contracts/](contracts/README.md) 下 OpenAPI 3.1 为准。契约为草案、尚未部署。修改用 `scripts/build_contracts.py` 更新再生成 JSON，不能仅修改生成文件。
 
 ## 通用约定

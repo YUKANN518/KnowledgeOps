@@ -116,5 +116,5 @@ catch {
 Remove-Item $tempDirectory -Recurse -Force
 [ordered]@{
   authentication = 'PASS'; ticket = 'PASS'; knowledge = 'PASS'; documents = 'PASS'; rbac403 = 'PASS'
-  ticketId = $ticket.id; articleId = $article.id; employeeEmail = $employeeEmail; managerEmail = $managerEmail; supportEmail = $supportEmail
+  ticketId = $ticket.id; articleId = $article.id; employeeEmail = $employeeEmail; managerEmail = $managerEmail; supportEmail = $supportEmail; supportId = $support.id
 } | ConvertTo-Json

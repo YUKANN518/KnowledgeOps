@@ -33,8 +33,13 @@ def main():
         for heading in ['Context', 'Decision', 'Alternatives', 'Consequences']:
             require('## ' + heading in path.read_text(encoding='utf-8'), f'{path}: missing {heading}')
     markdowns = [ROOT / 'README.md', ROOT / 'ARCHITECTURE_PHASE_REPORT.md']
+    generated_directories = {'.venv', 'node_modules', 'dist', 'target'}
     for folder in ['docs', 'frontend', 'backend-java', 'ai-service', 'evaluation', 'infra']:
-        markdowns += list((ROOT / folder).rglob('*.md'))
+        markdowns += [
+            path
+            for path in (ROOT / folder).rglob('*.md')
+            if generated_directories.isdisjoint(path.relative_to(ROOT).parts)
+        ]
     for path in markdowns:
         for target in re.findall(r'\[[^\]]+\]\(([^)]+)\)', path.read_text(encoding='utf-8')):
             if '://' in target or target.startswith('#'):
@@ -118,8 +123,11 @@ def main():
 
     compose = yaml.safe_load((ROOT / 'docker-compose.yml').read_text(encoding='utf-8'))
     apps = yaml.safe_load((ROOT / 'infra/compose.application.yml').read_text(encoding='utf-8'))
-    require(set(compose['services']) == {'java-backend', 'mysql', 'redis', 'vector-store'},
-            'Unexpected Phase 1 services')
+    require(set(compose['services']) == {'frontend', 'java-backend', 'mysql', 'redis', 'vector-store'},
+            'Unexpected final portfolio services')
+    frontend = compose['services']['frontend']
+    require(frontend['networks'] == ['web'], 'Frontend network boundary mismatch')
+    require(frontend['ports'][0].startswith('127.0.0.1:'), 'Frontend port must bind to loopback')
     java = compose['services']['java-backend']
     require(set(java['networks']) == {'web', 'business-data'}, 'Java network boundary mismatch')
     require(java['ports'][0].startswith('127.0.0.1:'), 'Java port must bind to loopback')

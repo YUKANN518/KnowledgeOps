@@ -1,5 +1,7 @@
 # Domain model and invariants
 
+> **Phase 0 design archive:** this model includes proposed AI, approval, versioning, and workflow concepts that are not in the final implementation. See [Architecture](ARCHITECTURE.md).
+
 | Domain / aggregate | 核心规则 |
 | --- | --- |
 | User / Department | 用户停用不删除历史；角色多选、主部门一个；调岗不改变旧单所属部门 |

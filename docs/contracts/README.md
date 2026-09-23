@@ -1,5 +1,7 @@
 # Machine-readable contracts
 
+> **Phase 0 design archive:** these generated contracts include proposed endpoints that are not all implemented. Use the running backend OpenAPI document for delivered behavior.
+
 - `java-public.openapi.json`：浏览器→Java。
 - `java-internal.openapi.json`：Python→Java，服务身份与opaque context。
 - `ai-service.openapi.json`：Java→Python。

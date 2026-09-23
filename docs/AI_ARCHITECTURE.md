@@ -1,5 +1,7 @@
 # AI architecture
 
+> **Phase 0 design archive:** AI, RAG, Python services, and vector search were not implemented. This file is retained only as architecture exploration.
+
 ## 文档处理与 parser contract
 
 `DocumentParser.supports(mediaType) -> bool`；`parse(source: BinaryIO, limits: ParseLimits) -> ParsedDocument`。输出 `blocks[{text,pageStart,pageEnd,headingPath,ordinal}]`、warnings、parserVersion；不返回模型生成文本。实现 PdfParser（文本 PDF）、DocxParser（段落/标题/表格按行提取）、TextParser（UTF-8 TXT/Markdown）。扫描 PDF 无可提取文字时 OCR_REQUIRED；加密 PDF 返回 DOCUMENT_ENCRYPTED；不静默生成空 READY。
