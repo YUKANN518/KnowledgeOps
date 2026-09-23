@@ -58,7 +58,7 @@ Ticket 的创建、评论、分配、状态流转都与对应审计事件在同�
 
 ## Q15. Testcontainers 有什么作用？
 
-它让集成测试运行真实 MySQL 8.4 和 Redis 7.4，验证 Flyway、数据库约束、JPA 行为、Redis session 和完整 HTTP 安全链路。相比 H2 或 mock Redis，它能更早发现生产数据库方言、约束和依赖行为差异。Phase 1–3 的 17 个集成测试场景都使用这套方式。
+它让集成测试运行真实 MySQL 8.4 和 Redis 7.4，验证 Flyway、数据库约束、JPA 行为、Redis session 和完整 HTTP 安全链路。相比 H2 或 mock Redis，它能更早发现生产数据库方言、约束和依赖行为差异。当前集成测试用它验证认证、工单、知识内容和数据库约束等真实流程。
 
 ## Q16. Audit Log 怎么实现？
 
@@ -74,9 +74,9 @@ Ticket 的创建、评论、分配、状态流转都与对应审计事件在同�
 
 ## Q19. 项目中遇到过哪些真实问题？
 
-1. **Windows 文件复制问题：** `Files.copy` 使用 `COPY_ATTRIBUTES` 时在 Windows 临时文件系统不受支持。最小修复是去掉该选项，不改变文件内容和安全检查；随后重跑 Phase 3 全部测试和 runtime smoke。
+1. **Windows 文件复制问题：** `Files.copy` 使用 `COPY_ATTRIBUTES` 时在 Windows 临时文件系统不受支持。最小修复是去掉该选项，不改变文件内容和安全检查；随后重跑知识模块集成测试和 runtime smoke。
 2. **Vue 表单引用问题：** Element Plus form ref 被写成普通变量，浏览器中 submit validation 没有执行。修复为 Vue `ref<FormInstance>()` 并通过真实登录、工单和文章表单流程验证。
-3. **JDK/Formatter 环境问题：** 本机 JDK 25 可以跑完所有测试，但旧 google-java-format 在 verify 最后阶段与 JDK internals 不兼容；JDK 21 Linux 容器又会看到 Windows bind mount 的 CRLF。没有为通过工具而修改稳定业务代码，报告明确区分“测试通过”和“完整 lifecycle 未通过”。
+3. **JDK/Formatter 环境问题：** 本机 JDK 25 可以编译并运行测试，但旧 google-java-format 在 verify 最后阶段与 JDK internals 不兼容；JDK 21 Linux 容器又会看到 Windows bind mount 的 CRLF。没有为通过工具而修改稳定业务代码，并明确区分测试结果与完整构建状态。
 
 ## Q20. 如果成为真实生产系统，会继续做什么？
 

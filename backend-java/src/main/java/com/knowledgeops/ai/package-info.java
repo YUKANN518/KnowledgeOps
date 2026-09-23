@@ -1,2 +1,2 @@
-/** Phase 5 placeholder. No AI, RAG, tool, or approval code is implemented in Phase 1. */
+/** Package boundary reserved to keep AI functionality outside the delivered product scope. */
 package com.knowledgeops.ai;

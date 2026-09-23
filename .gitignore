@@ -16,8 +16,6 @@ dist/
 target/
 .idea/
 .DS_Store
-evaluation/results/*
-!evaluation/results/.gitkeep
 *.log
 uploads/
 *.db

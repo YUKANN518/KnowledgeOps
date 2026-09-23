@@ -1,4 +1,4 @@
-# Final local portfolio topology. The later-phases profile is retained only as a design artifact.
+# Local portfolio runtime: Vue frontend, Spring Boot API, MySQL, and Redis.
 services:
   frontend:
     build:
@@ -75,24 +75,11 @@ services:
       timeout: 3s
       retries: 5
     restart: unless-stopped
-  vector-store:
-    image: qdrant/qdrant:v1.15.4
-    environment:
-      QDRANT__SERVICE__API_KEY: ${QDRANT_API_KEY:?Set QDRANT_API_KEY}
-    volumes:
-      - qdrant-data:/qdrant/storage
-    networks: [ai-data]
-    restart: unless-stopped
-    profiles: [later-phases]
-    # Application readiness probes HTTP /readyz; do not assume curl is in the upstream image.
 networks:
   web:
   business-data:
-    internal: true
-  ai-data:
     internal: true
 volumes:
   mysql-data:
   redis-data:
   uploads-data:
-  qdrant-data:

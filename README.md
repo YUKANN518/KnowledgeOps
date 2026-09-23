@@ -187,17 +187,14 @@ cd backend-java
 
 Windows 请使用 `.\mvnw.cmd clean verify`。集成测试覆盖认证、Refresh Token 轮换、RBAC、工单资源授权与并发、文章可见性、文件校验与下载、审计记录和 Flyway 约束。
 
-## 面试材料
+## 进一步阅读
 
-- [3–5 分钟演示脚本](docs/DEMO_SCRIPT.md)
 - [架构说明](docs/ARCHITECTURE.md)
-- [面试问答](docs/INTERVIEW_GUIDE.md)
-- [简历要点](docs/RESUME_BULLETS.md)
-- [作品集摘要](docs/PORTFOLIO_SUMMARY.md)
-- [Phase 5 验收报告](PHASE_5_PORTFOLIO_FINISH_REPORT.md)
+- [3–5 分钟演示脚本](docs/DEMO_SCRIPT.md)
+- [求职资料：面试问答、简历要点与作品集摘要](docs/README.md)
 
 ## 范围与限制
 
-KnowledgeOps 使用本地持久化文件存储，目前没有全文检索、对象存储、生产部署或生产 CI/CD 流水线。AI、RAG、向量检索、Python 服务、微服务、Kubernetes、通知和数据分析均未实现。仓库保留部分 Phase 0 设计资料作为规划历史，[文档索引](docs/README.md)会区分历史提案与最终交付系统。
+KnowledgeOps 使用本地持久化文件存储，当前未提供全文检索、对象存储、生产部署或生产 CI/CD 流水线。项目聚焦于可本地运行和演示的内部工单与知识管理工作流。
 
-开发已在 Phase 5 完成。仓库现用于作品集审阅、面试演示和求职材料展示。
+项目已完成，仓库用于作品集审阅、面试演示和求职材料展示。

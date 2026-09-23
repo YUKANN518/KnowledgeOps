@@ -59,7 +59,6 @@ smoke 脚本创建的账号和内容都是可丢弃的本地演示数据。
 - `backend-java/src/test/java/com/knowledgeops/`：Testcontainers 集成测试。
 - `docker-compose.yml`：前端、后端、MySQL、Redis 和 uploads volume。
 - `frontend/tests/runtime-smoke.ps1`：可重复执行的全栈 smoke 流程。
-- `PHASE_5_PORTFOLIO_FINISH_REPORT.md`：最终验收证据与已知限制。
 
 说明 MySQL 是业务数据的事实来源，Redis 校验活动会话；审计元数据有意排除凭据、Token 和正文。
 

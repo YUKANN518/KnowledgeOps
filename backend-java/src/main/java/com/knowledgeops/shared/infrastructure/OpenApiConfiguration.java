@@ -13,8 +13,9 @@ public class OpenApiConfiguration {
         .info(
             new Info()
                 .title("KnowledgeOps Java API")
-                .version("0.1.0-phase1")
-                .description("Implemented Phase 1 identity, auth, RBAC and audit APIs only."))
+                .version("0.1.0")
+                .description(
+                    "KnowledgeOps API for authentication, user and role management, tickets, knowledge content, and audit logs."))
         .components(
             new Components()
                 .addSecuritySchemes(

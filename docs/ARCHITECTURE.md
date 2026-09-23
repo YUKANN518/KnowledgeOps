@@ -1,6 +1,6 @@
 # KnowledgeOps 架构说明
 
-本文描述最终已经实现的系统，是运行时架构的主要参考；它取代范围更广的 Phase 0 提案。
+本文描述当前交付系统的运行时架构。
 
 ## 系统上下文
 
@@ -43,8 +43,6 @@ Controller 校验传输层输入后调用应用服务。应用服务负责事务
 - **Redis** 使用 Refresh Session TTL 保存 `session:{familyId}=ACTIVE`。会话状态缺失或 Redis 不可用时，认证按 fail closed 处理。
 - **Uploads volume** 使用服务端生成的 UUID 文件名保存已校验的原始文件，不对外作为静态目录暴露。
 - **Flyway** migration `V1`–`V3` 负责 schema；Hibernate 使用 `ddl-auto=validate`。
-
-已经实现的运行时不包含 Python 或 AI 服务。`later-phases` 中可选的 Qdrant profile 只是保留的架构资料，不属于 KnowledgeOps Phase 5。
 
 ## 认证与会话生命周期
 
@@ -93,4 +91,4 @@ Spring Security 方法注解执行粗粒度权限检查，应用服务继续执�
 
 Docker Compose 将 MySQL 和 Redis 隔离在内部网络，并通过具名 volume 持久化数据库、Redis 和上传数据。健康检查会控制依赖服务的启动顺序。集成测试使用 Testcontainers 运行真实 MySQL 8.4 和 Redis 7.4，不以嵌入式数据库替代其行为。
 
-启动命令见根目录 [README](../README.md)，最终验收证据见 [Phase 5 报告](../PHASE_5_PORTFOLIO_FINISH_REPORT.md)。
+启动和验证命令见根目录 [README](../README.md)。

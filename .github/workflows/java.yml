@@ -27,5 +27,5 @@ jobs:
       - name: Verify unit, architecture, Flyway and Testcontainers integration tests
         working-directory: backend-java
         run: ./mvnw -B clean verify
-      - name: Validate Phase 1 Compose
+      - name: Validate Compose configuration
         run: docker compose --env-file .env.example config --quiet
