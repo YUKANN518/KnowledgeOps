@@ -1,5 +1,19 @@
-# Frontend skeleton
+# KnowledgeOps frontend
 
-Phase6创建Vue3/TypeScript/Vite/Pinia/Router应用。src按app/router/stores/features/components/api组织；features为auth/knowledge/tickets/assistant/admin。所有API请求指向Java `/api/v1`，access token仅内存，refresh cookie由后端设置。
+Vue 3 and TypeScript client for the KnowledgeOps operations workspace.
 
-本轮无package.json、页面或业务实现；不要用空构建任务冒充前端可运行。审批界面必须展示完整payload/版本/失效时间及明确确认按钮。
+```bash
+npm install
+npm run dev
+```
+
+The development server proxies `/api` to `http://localhost:8080`. Production uses the Nginx reverse proxy defined in `nginx.conf`.
+
+Quality checks:
+
+```bash
+npm run lint
+npm run type-check
+npm test
+npm run build
+```
